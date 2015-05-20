@@ -37,6 +37,12 @@ public class Tour{
         Collections.shuffle(tour);
     }
 
+    // Returns tour information
+    public ArrayList getTour(){
+        return tour;
+    }
+
+
     // Gets a city from the tour
     public City getCity(int tourPosition) {
         return (City)tour.get(tourPosition);

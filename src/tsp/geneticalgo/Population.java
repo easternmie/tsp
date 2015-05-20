@@ -3,7 +3,9 @@
 * Manages a population of candidate tours
 */
 
-package tsp;
+package tsp.geneticalgo;
+
+import tsp.Tour;
 
 public class Population {
 

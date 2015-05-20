@@ -3,7 +3,11 @@
 * Manages algorithms for evolving population
 */
 
-package tsp;
+package tsp.geneticalgo;
+
+import tsp.City;
+import tsp.Tour;
+import tsp.geneticalgo.Population;
 
 public class GA {
 

@@ -3,13 +3,15 @@
 * Create a tour and evolve a solution
 */
 
-package tsp;
+package tsp.geneticalgo;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
+import tsp.City;
+import tsp.TourManager;
 
 public class TSP_GA {
 
