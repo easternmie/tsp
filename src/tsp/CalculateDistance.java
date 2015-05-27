@@ -10,7 +10,7 @@ public class CalculateDistance {
         double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
         dist = Math.acos(dist);
         dist = rad2deg(dist);
-        return dist * 60 * 1.609344;
+        return dist  * 1.1515 * 1.609344;
     }
 
     private static double deg2rad(double deg) {

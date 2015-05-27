@@ -24,14 +24,14 @@ public class Test {
 
     private static void display() {
         XYSeries series = new XYSeries(Title);
-        for (int i = 0; i <= 10; i++) {
-            series.add(i, Math.pow(2, i));
+        for (int i = 0; i <= 100; i++) {
+            series.add(i, Math.random());
         }
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(series);
         NumberAxis domain = new NumberAxis("x");
         NumberAxis range = new NumberAxis("f(x)");
-        XYSplineRenderer r = new XYSplineRenderer(3);
+        XYSplineRenderer r = new XYSplineRenderer(5);
         XYPlot xyplot = new XYPlot(dataset, domain, range, r);
         JFreeChart chart = new JFreeChart(xyplot);
         ChartPanel chartPanel = new ChartPanel(chart){

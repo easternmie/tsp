@@ -1,9 +1,18 @@
 package tsp.greatdeluge;
 
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import tsp.City;
 import tsp.Tour;
 import tsp.TourManager;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -22,14 +31,14 @@ import java.util.StringTokenizer;
  Set optimal rate of final solution, Optimalrate;
  Set number of iterations, NumOfIteGD;
  Set initial level: level ? f(SolGD);
- Set decreasing rate ?B = ((f(SolGD)–Optimalrate)/(NumOfIteGD);
+ Set decreasing rate ?B = ((f(SolGD)ï¿½Optimalrate)/(NumOfIteGD);
  Set iteration ? 0;
  Set not_improving_counter ? 0, not_improving_ length_GDA;
  do while (iteration < NumOfIteGD)
-     Apply neighbourhood structure Ni where i ? {1,…,K} on
+     Apply neighbourhood structure Ni where i ? {1,ï¿½,K} on
      SolGD,TempSolGDi;
      Calculate cost function f(TempSolGDi);
-     Find the best solution among TempSolGDi where i ? {1,…,K} call new
+     Find the best solution among TempSolGDi where i ? {1,ï¿½,K} call new
      solution SolGD*;
      if (f(SolGD*) < f(SolbestGD))
          SolGD ? SolGD*;
@@ -49,6 +58,10 @@ import java.util.StringTokenizer;
  return SolbestGD;
  */
 public class TSP_GD {
+
+    private static String Title = "Great Deluge Graph";
+    private static XYSeries series = new XYSeries(Title);
+
     public static void main(String[] args) throws Exception{
         try {
             BufferedReader br = new BufferedReader(new FileReader("city.txt"));
@@ -85,12 +98,12 @@ public class TSP_GD {
         double Optimalrate = 0.99;
 
         //Set number of iterations, NumOfIteGD;
-        int NumOfIteGD = 1000;
+        int NumOfIteGD = 10;
 
         //Set initial level: level ? f(SolGD);
         double level = fSolGD;
 
-        //Set decreasing rate ?B = ((f(SolGD)–Optimalrate)/(NumOfIteGD);
+        //Set decreasing rate ?B = ((f(SolGD)ï¿½Optimalrate)/(NumOfIteGD);
         double decreasingRateB = (fSolGD-Optimalrate)/NumOfIteGD;
 
         //Set iteration ? 0;
@@ -105,7 +118,7 @@ public class TSP_GD {
 
         while(iteration < NumOfIteGD) {//do while (iteration < NumOfIteGD)
             String stat = "";
-            //    Apply neighbourhood structure Ni where i ? {1,…,K} on SolGD,TempSolGDi;
+            //    Apply neighbourhood structure Ni where i ? {1,ï¿½,K} on SolGD,TempSolGDi;
             // Create new neighbour tour
             Tour TempSolGDi = new Tour(SolGD.getTour());
 
@@ -128,7 +141,7 @@ public class TSP_GD {
             int fTempSolGDi = TempSolGDi.getDistance();
 
 
-            //Find the best solution among TempSolGDi where i ? {1,…,K} call new solution SolGD*;
+            //Find the best solution among TempSolGDi where i ? {1,ï¿½,K} call new solution SolGD*;
             if(fSolGDprime < fSolbestGD) {//if (f(SolGD*) < f(SolbestGD))
                 SolGD = TempSolGDi; //    SolGD ? SolGD*;
                 SolbestGD = SolGD; //SolbestGD ? SolGD*;
@@ -153,13 +166,46 @@ public class TSP_GD {
             System.out.format(format, iteration, TempSolGDi.getDistance() + "KM" + stat, SolbestGD.getDistance() + "KM", TempSolGDi);
 
             //Increase iteration by 1;
+            series.add(iteration+1,TempSolGDi.getDistance());
             iteration++;
+
         } //end do;
         //return SolbestGD;
 
+        EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                display();
+            }
+        });
 
 
+    }
 
+    private static void display() {
+
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(series);
+        NumberAxis domain = new NumberAxis("Iteration");
+        NumberAxis range = new NumberAxis("Distance");
+        XYSplineRenderer r = new XYSplineRenderer(1);
+        XYPlot xyplot = new XYPlot(dataset, domain, range, r);
+        JFreeChart chart = new JFreeChart(xyplot);
+        ChartPanel chartPanel = new ChartPanel(chart){
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(640, 480);
+            }
+        };
+        JFrame frame = new JFrame(Title);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(chartPanel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
 }

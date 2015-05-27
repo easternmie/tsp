@@ -1,9 +1,18 @@
 package tsp.simulatedannealing;
 
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import tsp.City;
 import tsp.Tour;
 import tsp.TourManager;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,6 +23,9 @@ import java.util.StringTokenizer;
  * Created by azrul_000 on 21/5/2015.
  */
 public class TSP_SA {
+    private static String Title = "Simulated Annealing Graph";
+    private static XYSeries series = new XYSeries(Title);
+
     public static void main(String[] args) throws Exception {
 
         try {
@@ -48,8 +60,10 @@ public class TSP_SA {
         System.out.format(format, "Iteration","S\'", "Best", "Path");
         System.out.format(format, "init",bestsolution+"KM", bestsolution+"KM", currentSolution);
 
+        double initsolution = bestsolution;
         // Loop until system has cooled
         String stat = "";
+        int count = 0;
         while (temp > 1) {
             stat = "";
             // Create new neighbour tour
@@ -75,6 +89,7 @@ public class TSP_SA {
             if (acceptanceProbability(currentEnergy, neighbourEnergy, temp) > Math.random()) {
                 currentSolution = new Tour(newSolution.getTour());
                 stat = "(A)";
+                series.add(100-temp,currentSolution.getDistance());
             }
 
             // Keep track of the best solution found
@@ -86,12 +101,47 @@ public class TSP_SA {
             // Cool system
             temp *= 1-coolingRate;
 
+            //double fitness = (initsolution - newSolution.getDistance());
+
+
             System.out.format(format, temp,currentSolution.getDistance()+"KM"+stat, best.getDistance()+"KM", currentSolution);
         }
 
 
         //System.out.println("Final solution distance: " + best.getDistance());
         //System.out.println("Tour: " + best);
+        EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                display();
+            }
+        });
+    }
+
+    private static void display() {
+
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(series);
+        NumberAxis domain = new NumberAxis("Temprature");
+        NumberAxis range = new NumberAxis("Distance");
+        XYSplineRenderer r = new XYSplineRenderer(3);
+        XYPlot xyplot = new XYPlot(dataset, domain, range, r);
+        JFreeChart chart = new JFreeChart(xyplot);
+        ChartPanel chartPanel = new ChartPanel(chart){
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(640, 480);
+            }
+        };
+        JFrame frame = new JFrame(Title);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(chartPanel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     // Calculate the acceptance probability
