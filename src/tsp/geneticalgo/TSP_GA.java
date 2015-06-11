@@ -48,18 +48,16 @@ public class TSP_GA {
             e.printStackTrace();
         }
 
-
         // Initialize population
         Population pop = new Population(50, true);
         String format = "|%1$-10s|%2$-10s|%3$-10s|%4$-50s|\n";
         System.out.format(format, "Iteration","Accepted", "Best", "Candidate Solution");
 
-
         // Evolve population for 10 generations
         pop = GA.evolvePopulation(pop);
         System.out.format(format, "init",pop.getFittest().getDistance()+"KM", pop.getFittest().getDistance()+"KM", pop.getFittest());
         int thebest = pop.getFittest().getDistance();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             Population pop2 = GA.evolvePopulation(pop);
             int newcs = pop2.getFittest().getDistance();
             if(newcs<thebest){
@@ -71,14 +69,7 @@ public class TSP_GA {
             series.add(i+1,newcs);
         }
 
-        // Print final results
-        //System.out.println("Finished");
-        //System.out.println("Final distance: " + pop.getFittest().getDistance());
-        //System.out.println("Solution:");
-        //System.out.println(pop.getFittest());
-
         EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 display();
@@ -88,8 +79,6 @@ public class TSP_GA {
     }
 
     private static void display() {
-
-
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(series);
         NumberAxis domain = new NumberAxis("Generation");

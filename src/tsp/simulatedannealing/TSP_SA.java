@@ -89,7 +89,6 @@ public class TSP_SA {
             if (acceptanceProbability(currentEnergy, neighbourEnergy, temp) > Math.random()) {
                 currentSolution = new Tour(newSolution.getTour());
                 stat = "(A)";
-                series.add(100-temp,currentSolution.getDistance());
             }
 
             // Keep track of the best solution found
@@ -100,23 +99,25 @@ public class TSP_SA {
 
             // Cool system
             temp *= 1-coolingRate;
-
+            series.add(100-temp,currentSolution.getDistance());
             //double fitness = (initsolution - newSolution.getDistance());
-
-
             System.out.format(format, temp,currentSolution.getDistance()+"KM"+stat, best.getDistance()+"KM", currentSolution);
         }
-
-
-        //System.out.println("Final solution distance: " + best.getDistance());
-        //System.out.println("Tour: " + best);
         EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 display();
             }
         });
+    }
+    // Calculate the acceptance probability
+    public static double acceptanceProbability(int energy, int newEnergy, double temperature) {
+        // If the new solution is better, accept it
+        if (newEnergy < energy) {
+            return 1.0;
+        }
+        // If the new solution is worse, calculate an acceptance probability
+        return Math.exp((energy - newEnergy) / temperature);
     }
 
     private static void display() {
@@ -144,13 +145,5 @@ public class TSP_SA {
         frame.setVisible(true);
     }
 
-    // Calculate the acceptance probability
-    public static double acceptanceProbability(int energy, int newEnergy, double temperature) {
-        // If the new solution is better, accept it
-        if (newEnergy < energy) {
-            return 1.0;
-        }
-        // If the new solution is worse, calculate an acceptance probability
-        return Math.exp((energy - newEnergy) / temperature);
-    }
+
 }

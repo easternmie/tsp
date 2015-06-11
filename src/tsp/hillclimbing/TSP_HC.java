@@ -19,15 +19,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-/**
- * Created by azrul_000 on 20/5/2015.
- */
 public class TSP_HC {
 
     private static String Title = "Hill Climbing Graph";
     private static XYSeries series = new XYSeries(Title);
 
     public static void main(String[] args) throws Exception{
+
         try {
             BufferedReader br = new BufferedReader(new FileReader("city.txt"));
             String line =  br.readLine();
@@ -58,28 +56,47 @@ public class TSP_HC {
         //2) climb until get better solution. break if candidate solution is same/worse or until maxgeneration
         //series.add(1,bestsolution);
         for(int i=0;i<100;i++){
-            initialsolution.generateIndividual();
-            int newcs = initialsolution.getDistance();
-            if(newcs<bestsolution){
-                bestsolution = newcs;
+            //initialsolution.generateIndividual();
+            //int newcs = initialsolution.getDistance();
+            Tour TempSolGDi = new Tour(initialsolution.getTour());
+
+            // Get a random positions in the tour
+            int tourPos1 = (int) (TempSolGDi.tourSize() * Math.random());
+            int tourPos2 = (int) (TempSolGDi.tourSize() * Math.random());
+
+            // Get the cities at selected positions in the tour
+            City citySwap1 = TempSolGDi.getCity(tourPos1);
+            City citySwap2 = TempSolGDi.getCity(tourPos2);
+
+            // Swap them
+            TempSolGDi.setCity(tourPos2, citySwap1);
+            TempSolGDi.setCity(tourPos1, citySwap2);
+
+            // Get energy of solutions
+            int fSolGDprime = TempSolGDi.getDistance();
+
+            //Calculate cost function f(TempSolGDi);
+            int fTempSolGDi = TempSolGDi.getDistance();
+
+
+            if(fTempSolGDi<bestsolution){
+                bestsolution = fTempSolGDi;
                 System.out.format(format,i+1 ,bestsolution+"KM", bestsolution+"KM", initialsolution);
 
             }else{
-                System.out.format(format,(i+1)+"(RS)" ,newcs+"KM", bestsolution+"KM", initialsolution);
-                //break;
+                System.out.format(format,(i+1)+"(RS)" ,fTempSolGDi+"KM", bestsolution+"KM", initialsolution);
+                break;
+                //initialsolution.generateIndividual();   //random restart
             }
-            series.add(i+1,newcs);
-
+            series.add(i+1,fTempSolGDi);
         }
 
         EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 display();
             }
         });
-
     }
 
     private static void display() {

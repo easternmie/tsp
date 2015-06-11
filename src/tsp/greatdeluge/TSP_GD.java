@@ -61,6 +61,7 @@ public class TSP_GD {
 
     private static String Title = "Great Deluge Graph";
     private static XYSeries series = new XYSeries(Title);
+    private static XYSeries series2 = new XYSeries("Level");
 
     public static void main(String[] args) throws Exception{
         try {
@@ -94,11 +95,11 @@ public class TSP_GD {
         //f(SolbestGD)? f(Sol)
         int fSolbestGD = SolbestGD.getDistance();
 
-        //Set optimal rate of final solution, Optimalrate;
-        double Optimalrate = 0.99;
+        //Set optimal ra0te of final solution, Optimalrate;
+        double Optimalrate = 7150;
 
         //Set number of iterations, NumOfIteGD;
-        int NumOfIteGD = 10;
+        int NumOfIteGD = 1000;
 
         //Set initial level: level ? f(SolGD);
         double level = fSolGD;
@@ -112,9 +113,9 @@ public class TSP_GD {
         //Set not_improving_counter ? 0, not_improving_length_GDA;
         int not_improving_counter = 0; int not_improving_length_GDA = 3;
 
-        String format = "|%1$-10s|%2$-15s|%3$-15s|%4$-50s|\n";
-        System.out.format(format, "Iteration","S\'", "Best", "Path");
-        System.out.format(format, "init",fSolbestGD+"KM", fSolbestGD+"KM", SolbestGD);
+        String format = "|%1$-10s|%2$-15s|%3$-15s|%3$-15s|%4$-50s|\n";
+        System.out.format(format, "Iteration","S\'", "Best","Level", "Path");
+        System.out.format(format, "init",fSolbestGD+"KM", fSolbestGD+"KM",level, SolbestGD);
 
         while(iteration < NumOfIteGD) {//do while (iteration < NumOfIteGD)
             String stat = "";
@@ -140,58 +141,63 @@ public class TSP_GD {
             //Calculate cost function f(TempSolGDi);
             int fTempSolGDi = TempSolGDi.getDistance();
 
-
             //Find the best solution among TempSolGDi where i ? {1,�,K} call new solution SolGD*;
-            if(fSolGDprime < fSolbestGD) {//if (f(SolGD*) < f(SolbestGD))
-                SolGD = TempSolGDi; //    SolGD ? SolGD*;
-                SolbestGD = SolGD; //SolbestGD ? SolGD*;
+            if(fSolGDprime < fSolbestGD && fSolGDprime<=level ) {//if (f(SolGD*) < f(SolbestGD))
+                SolGD = TempSolGDi;         //    SolGD ? SolGD*;
+                SolbestGD = SolGD;          //SolbestGD ? SolGD*;
                 not_improving_counter = 0;  //not_improving_counter ? 0;
-                level = level - decreasingRateB; //level = level - ?B;
+                series.add(iteration+1,SolbestGD.getDistance());
                 stat = "(AB)";
             }else {
                 if (fSolGD <= level) {    // else if (f(SolGD*)? level
                     SolGD = TempSolGDi;//SolGD ? SolGD*;
                     not_improving_counter = 0;//not_improving_counter ? 0;
                     stat = "(A )";
+                    series.add(iteration+1,TempSolGDi.getDistance());
                 } else {//else
                     not_improving_counter++;//not_improving_counter++;
                     if (not_improving_counter == not_improving_length_GDA) {//if (not_improving_counter == not_improving_length_GDA)
-                        level = level + new Random().nextInt(10); //    level= level + random(0,3);
+                        level = level; //    level= level + random(0,3);
                     }
                     stat = "(R )";
+                    //series.add(iteration+1,TempSolGDi.getDistance());
                 }
             }
+            level = level - decreasingRateB; //level = level - ?B;
+            series2.add(iteration+1,level);
 
 
-            System.out.format(format, iteration, TempSolGDi.getDistance() + "KM" + stat, SolbestGD.getDistance() + "KM", TempSolGDi);
+            System.out.format(format, iteration, TempSolGDi.getDistance() + "KM" + stat, SolbestGD.getDistance() + "KM", level,TempSolGDi);
 
             //Increase iteration by 1;
-            series.add(iteration+1,TempSolGDi.getDistance());
-            iteration++;
 
+            iteration++;
         } //end do;
-        //return SolbestGD;
 
         EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 display();
             }
         });
-
-
     }
 
     private static void display() {
-
-
         XYSeriesCollection dataset = new XYSeriesCollection();
+        XYSeriesCollection dataset2 = new XYSeriesCollection();
         dataset.addSeries(series);
+        dataset2.addSeries(series2);
+
         NumberAxis domain = new NumberAxis("Iteration");
         NumberAxis range = new NumberAxis("Distance");
         XYSplineRenderer r = new XYSplineRenderer(1);
+
         XYPlot xyplot = new XYPlot(dataset, domain, range, r);
+        xyplot.setDataset(0,dataset);
+        xyplot.setDataset(1,dataset2);
+
+        xyplot.getRenderer().setSeriesPaint(1, new Color(0x00, 0x00, 0x00));
+
         JFreeChart chart = new JFreeChart(xyplot);
         ChartPanel chartPanel = new ChartPanel(chart){
 

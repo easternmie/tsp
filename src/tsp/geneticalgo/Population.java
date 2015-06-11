@@ -8,7 +8,6 @@ package tsp.geneticalgo;
 import tsp.Tour;
 
 public class Population {
-
     // Holds population of tours
     Tour[] tours;
 
